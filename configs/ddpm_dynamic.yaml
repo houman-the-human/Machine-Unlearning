@@ -1,0 +1,112 @@
+# ==========================================================
+# DDPM Dynamic Lambda SISS Unlearning Configuration
+# ==========================================================
+
+project:
+  name: "ddpm_mnist_unlearning_dynamic_lambda"
+  output_dir: "DDPM_Unlearned_Dynamic"
+  seed: 42
+
+# ----------------------------------------------------------
+# DATA
+# ----------------------------------------------------------
+data:
+  retain_path: "Dataset/original_mnist.pt"
+  forget_path: "Dataset/trousers_subset.pt"
+
+  image_size: 64
+  num_classes: 10
+
+  batch_size: 128
+  num_workers: 2
+  shuffle: true
+
+  normalize_mean: 0.5
+  normalize_std: 0.5
+
+# ----------------------------------------------------------
+# MODEL (UNet + Class Embedding)
+# ----------------------------------------------------------
+model:
+  unet:
+    sample_size: 64
+    in_channels: 1
+    out_channels: 1
+    layers_per_block: 2
+    block_out_channels: [128, 256, 512]
+    down_block_types: ["DownBlock2D", "AttnDownBlock2D", "DownBlock2D"]
+    up_block_types: ["UpBlock2D", "AttnUpBlock2D", "UpBlock2D"]
+    cross_attention_dim: 256
+
+  class_embedding_dim: 256
+
+  pretrained_unet_path: "DDPM/unet_final_ema.pt"
+  pretrained_embedder_path: "DDPM/class_embedder.pt"
+
+# ----------------------------------------------------------
+# LAMBDA ENCODER NETWORK
+# ----------------------------------------------------------
+lambda_encoder:
+  input_dim: 4        # (loss_x, loss_a, grad_x_norm, grad_a_norm)
+  hidden1: 64
+  hidden2: 32
+  output_mu: 1
+  output_logvar: 1
+  initial_lambda: 0.5
+  optimizer:
+    lr: 1e-4
+    weight_decay: 0.0
+  kl_weight: 0.01
+
+# ----------------------------------------------------------
+# TRAINING / UNLEARNING
+# ----------------------------------------------------------
+training:
+  epochs: 100
+
+  optimizer:
+    type: "adamw"
+    lr: 1e-5
+    weight_decay: 0.0
+    beta1: 0.9
+    beta2: 0.999
+
+  scheduler:
+    type: "cosine"
+    warmup_steps: 500
+
+  ema:
+    decay: 0.9999
+
+  amp:
+    enabled: true
+
+# ----------------------------------------------------------
+# DIFFUSION SCHEDULER
+# ----------------------------------------------------------
+ddpm:
+  num_train_timesteps: 1000
+  beta_schedule: "scaled_linear"
+
+# ----------------------------------------------------------
+# SISS HYPERPARAMETERS
+# ----------------------------------------------------------
+siss:
+  # dynamic λ — so no scalar λ here
+  grad_clip_ratio: null         # Not used in dynamic version
+  eps: 1e-12
+  use_scaling_factor: false     # Scaling factor removed in your dynamic version
+
+# ----------------------------------------------------------
+# LOGGING & SAVING
+# ----------------------------------------------------------
+logging:
+  save_plots: true
+  loss_plot_path: "siss_loss_curves_dynamic_ema.png"
+  lambda_plot_path: "siss_lambda_history_dynamic_ema.png"
+  tqdm_mininterval: 0.1
+
+saving:
+  unet_output: "DDPM_Unlearned_Dynamic/unet_unlearned_dynamic_ema.pt"
+  embedder_output: "DDPM_Unlearned_Dynamic/class_embedder_unlearned_dynamic_ema.pt"
+  make_output_dir: true
