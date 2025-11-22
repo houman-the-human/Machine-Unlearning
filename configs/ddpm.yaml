@@ -1,0 +1,52 @@
+# ======================================================
+# DDPM CONFIGURATION FILE
+# Matches train_diffusion.py exactly
+# ======================================================
+
+dataset:
+  path: Dataset/augmented_mnist_with_trousers.pt
+  image_size: 64
+  num_workers: 2
+  batch_size: 128
+  normalize_mean: 0.5
+  normalize_std: 0.5
+  random_flip: true
+
+model:
+  sample_size: 64
+  in_channels: 1
+  out_channels: 1
+  layers_per_block: 2
+  block_out_channels: [128, 256, 512]
+  down_block_types: ["DownBlock2D", "AttnDownBlock2D", "DownBlock2D"]
+  up_block_types: ["UpBlock2D", "AttnUpBlock2D", "UpBlock2D"]
+  cross_attention_dim: 256
+
+class_embedding:
+  num_classes: 10
+  embedding_dim: 256
+
+diffusion:
+  num_train_timesteps: 1000
+  beta_schedule: "scaled_linear"
+
+training:
+  epochs: 50
+  use_amp: true
+  optimizer:
+    type: "AdamW"
+    lr: 1e-4
+    weight_decay: 0.0
+  ema_decay: 0.9999
+  lr_scheduler:
+    type: "cosine"
+    num_warmup_steps: 500
+
+sampling:
+  sample_every: 5
+  output_dir: "DDPM/samples"
+
+checkpointing:
+  output_dir: "DDPM"
+  unet_ckpt: "DDPM/unet_final_ema.pt"
+  embedder_ckpt: "DDPM/class_embedder.pt"
