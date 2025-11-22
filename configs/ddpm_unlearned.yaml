@@ -4,15 +4,15 @@
 
 project:
   name: "ddpm_mnist_unlearning"
-  output_dir: "DDPM_Unlearned"
+  output_dir: "experiments/unlearned_ddpm"
   seed: 42
 
 # ------------------------
 # DATA
 # ------------------------
 data:
-  retain_path: "Dataset/original_mnist.pt"
-  forget_path: "Dataset/trousers_subset.pt"
+  retain_path: "data/processed/original_mnist.pt"
+  forget_path: "data/processed/trousers_subset.pt"
 
   image_size: 64
   num_classes: 10
@@ -40,8 +40,8 @@ model:
 
   class_embedding_dim: 256
 
-  pretrained_unet_path: "DDPM/unet_final_ema.pt"
-  pretrained_embedder_path: "DDPM/class_embedder.pt"
+  pretrained_unet_path: "experiments/ddpm/unet_final_ema.pt"
+  pretrained_embedder_path: "experiments/ddpm/class_embedder.pt"
 
 # ------------------------
 # TRAINING / UNLEARNING
@@ -85,10 +85,10 @@ siss:
 # ------------------------
 logging:
   save_plots: true
-  plot_path: "siss_loss_curves_ema_amp.png"
+  plot_path: "experiments/unlearned_ddpm/siss_loss_curves_ema_amp.png"
   tqdm_mininterval: 0.1
 
 saving:
-  unet_output: "DDPM_Unlearned/unet_unlearned_ema.pt"
-  embedder_output: "DDPM_Unlearned/class_embedder_unlearned_ema.pt"
+  unet_output: "experiments/unlearned_ddpm/unet_unlearned_ema.pt"
+  embedder_output: "experiments/unlearned_ddpm/class_embedder_unlearned_ema.pt"
   make_output_dir: true
