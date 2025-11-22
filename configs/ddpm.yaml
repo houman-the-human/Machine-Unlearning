@@ -1,12 +1,11 @@
 # ======================================================
 # DDPM CONFIGURATION FILE
-# Matches train_diffusion.py exactly
 # ======================================================
 
 dataset:
-  path: Dataset/augmented_mnist_with_trousers.pt
+  path: data/processed/augmented_mnist_with_trousers.pt  
   image_size: 64
-  num_workers: 2
+  num_workers: 4
   batch_size: 128
   normalize_mean: 0.5
   normalize_std: 0.5
@@ -44,9 +43,9 @@ training:
 
 sampling:
   sample_every: 5
-  output_dir: "DDPM/samples"
+  output_dir: experiments/ddpm/samples      
 
 checkpointing:
-  output_dir: "DDPM"
-  unet_ckpt: "DDPM/unet_final_ema.pt"
-  embedder_ckpt: "DDPM/class_embedder.pt"
+  output_dir: experiments/ddpm              
+  unet_ckpt: experiments/ddpm/unet_final_ema.pt     
+  embedder_ckpt: experiments/ddpm/class_embedder.pt 
