@@ -4,15 +4,15 @@
 
 project:
   name: "ddpm_mnist_unlearning_dynamic_lambda"
-  output_dir: "DDPM_Unlearned_Dynamic"
+  output_dir: "experiments/dynamic_ddpm"     
   seed: 42
 
 # ----------------------------------------------------------
 # DATA
 # ----------------------------------------------------------
 data:
-  retain_path: "Dataset/original_mnist.pt"
-  forget_path: "Dataset/trousers_subset.pt"
+  retain_path: "data/processed/original_mnist.pt"     
+  forget_path: "data/processed/trousers_subset.pt"      
 
   image_size: 64
   num_classes: 10
@@ -40,14 +40,14 @@ model:
 
   class_embedding_dim: 256
 
-  pretrained_unet_path: "DDPM/unet_final_ema.pt"
-  pretrained_embedder_path: "DDPM/class_embedder.pt"
+  pretrained_unet_path: "experiments/ddpm/unet_final_ema.pt"       
+  pretrained_embedder_path: "experiments/ddpm/class_embedder.pt"    
 
 # ----------------------------------------------------------
 # LAMBDA ENCODER NETWORK
 # ----------------------------------------------------------
 lambda_encoder:
-  input_dim: 4        # (loss_x, loss_a, grad_x_norm, grad_a_norm)
+  input_dim: 4
   hidden1: 64
   hidden2: 32
   output_mu: 1
@@ -92,21 +92,20 @@ ddpm:
 # SISS HYPERPARAMETERS
 # ----------------------------------------------------------
 siss:
-  # dynamic λ — so no scalar λ here
-  grad_clip_ratio: null         # Not used in dynamic version
+  grad_clip_ratio: null
   eps: 1e-12
-  use_scaling_factor: false     # Scaling factor removed in your dynamic version
+  use_scaling_factor: false
 
 # ----------------------------------------------------------
 # LOGGING & SAVING
 # ----------------------------------------------------------
 logging:
   save_plots: true
-  loss_plot_path: "siss_loss_curves_dynamic_ema.png"
-  lambda_plot_path: "siss_lambda_history_dynamic_ema.png"
+  loss_plot_path: "experiments/dynamic_ddpm/siss_loss_curves_dynamic_ema.png" 
+  lambda_plot_path: "experiments/dynamic_ddpm/siss_lambda_history_dynamic_ema.png" 
   tqdm_mininterval: 0.1
 
 saving:
-  unet_output: "DDPM_Unlearned_Dynamic/unet_unlearned_dynamic_ema.pt"
-  embedder_output: "DDPM_Unlearned_Dynamic/class_embedder_unlearned_dynamic_ema.pt"
+  unet_output: "experiments/dynamic_ddpm/unet_unlearned_dynamic_ema.pt"       
+  embedder_output: "experiments/dynamic_ddpm/class_embedder_unlearned_dynamic_ema.pt"
   make_output_dir: true
